@@ -1,0 +1,26 @@
+{
+  "name": "stellar-strava",
+  "version": 2,
+  "builds": [
+    {
+      "src": "**/*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_STRAVA_MCP": "true",
+    "NEXT_PUBLIC_STELLAR_NETWORK": "testnet"
+  },
+  "projectSettings": {
+    "installCommand": "echo 'No dependencies needed'",
+    "buildCommand": "echo 'Static site - no build required'",
+    "outputDirectory": "."
+  },
+  "public": true
+}

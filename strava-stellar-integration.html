@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integración Strava → Stellar | Documentación Técnica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FC5200;
+            --stellar: #13C41E;
+            --strava: #FC5200;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --code-bg: #2d2d2d;
+            --code-text: #f8f8f2;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, monospace;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        section h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        section h3 {
+            color: var(--primary);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        section p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border-left: 4px solid var(--primary);
+        }
+
+        .code-block code {
+            font-family: inherit;
+        }
+
+        .endpoint {
+            background: #f5f5f5;
+            border-left: 4px solid var(--stellar);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .method-get {
+            background: #61affe;
+            color: white;
+        }
+
+        .method-post {
+            background: #49cc90;
+            color: white;
+        }
+
+        .method-put {
+            background: #fca130;
+            color: white;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--stellar);
+            font-weight: bold;
+        }
+
+        .flow-diagram {
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .flow-step {
+            display: inline-block;
+            background: white;
+            border: 2px solid var(--primary);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            margin: 5px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        thead {
+            background: var(--light);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--stellar);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 5px 5px 5px 0;
+            font-weight: 600;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.6em;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .code-block {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 Integración Strava ↔ Stellar</h1>
+            <div class="subtitle">Documentación técnica de implementación MCP</div>
+        </header>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('architecture')">Arquitectura</button>
+            <button class="nav-tab" onclick="switchTab('mcp-integration')">MCP Integration</button>
+            <button class="nav-tab" onclick="switchTab('smart-contracts')">Smart Contracts</button>
+            <button class="nav-tab" onclick="switchTab('deployment')">Deployment</button>
+        </div>
+
+        <!-- ARCHITECTURE SECTION -->
+        <div id="architecture" class="section active">
+            <h2>🏗️ Arquitectura del Sistema</h2>
+
+            <h3>Flujo General</h3>
+            <div class="flow-diagram">
+                <div class="flow-step">User Strava</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">Strava MCP</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">Backend Processor</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">Stellar Chain</div>
+            </div>
+
+            <h3>Componentes Principales</h3>
+            <div class="feature-list">
+                <li><strong>Strava MCP Server</strong> - Obtiene actividades de ciclismo</li>
+                <li><strong>Data Processor</strong> - Calcula CO2 basado en km</li>
+                <li><strong>Stellar Bridge</strong> - Emite tokens BIKE</li>
+                <li><strong>Frontend UI</strong> - Interfaz de usuario interactiva</li>
+                <li><strong>Wallet Manager</strong> - Gestiona direcciones Stellar</li>
+            </div>
+
+            <h3>Flujo de Datos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Etapa</th>
+                        <th>Entrada</th>
+                        <th>Proceso</th>
+                        <th>Salida</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. Autenticación</td>
+                        <td>Credenciales Strava</td>
+                        <td>OAuth2</td>
+                        <td>Token de acceso</td>
+                    </tr>
+                    <tr>
+                        <td>2. Sincronización</td>
+                        <td>Token + User ID</td>
+                        <td>Fetch actividades</td>
+                        <td>Array de actividades</td>
+                    </tr>
+                    <tr>
+                        <td>3. Cálculo</td>
+                        <td>Array de actividades</td>
+                        <td>Suma km × 0.120</td>
+                        <td>kg CO2 evitado</td>
+                    </tr>
+                    <tr>
+                        <td>4. Emisión</td>
+                        <td>kg CO2</td>
+                        <td>Smart Contract</td>
+                        <td>Tokens BIKE</td>
+                    </tr>
+                    <tr>
+                        <td>5. Distribución</td>
+                        <td>Tokens + Wallet</td>
+                        <td>Envío</td>
+                        <td>Saldo en Stellar</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MCP INTEGRATION SECTION -->
+        <div id="mcp-integration" class="section">
+            <h2>🔌 Integración MCP con Strava</h2>
+
+            <div class="success-box">
+                <strong>✓ MCP Strava disponible</strong> - Las herramientas de Strava MCP ya están integradas en Claude Code.
+            </div>
+
+            <h3>Herramientas Strava MCP Disponibles</h3>
+            <div class="info-box">
+                Estas herramientas están disponibles para obtener datos de Strava:
+            </div>
+
+            <h4>1. list_activities</h4>
+            <div class="endpoint">
+                <div class="endpoint-method">GET</div>
+                <strong>/athlete/activities</strong>
+                <p>Obtiene todas las actividades del usuario autenticado.</p>
+            </div>
+
+            <div class="code-block"><code>// Ejemplo de respuesta
+{
+  "activities": [
+    {
+      "id": 12345678,
+      "name": "Morning Ride",
+      "distance": 15500,  // metros
+      "moving_time": 1200,  // segundos
+      "type": "Ride",
+      "start_date": "2026-08-20T07:30:00Z",
+      "average_speed": 12.92,  // m/s
+      "kudos_count": 5,
+      "elevation_gain": 120.5
+    }
+  ]
+}</code></div>
+
+            <h4>2. get_athlete_profile</h4>
+            <div class="endpoint">
+                <div class="endpoint-method">GET</div>
+                <strong>/athlete</strong>
+                <p>Obtiene el perfil del atleta autenticado.</p>
+            </div>
+
+            <div class="code-block"><code>// Ejemplo de respuesta
+{
+  "id": 87654321,
+  "firstname": "Leandro",
+  "lastname": "Fuenzalida",
+  "email": "leandro@example.com",
+  "profile_medium": "https://...",
+  "city": "Bogotá",
+  "country": "Colombia",
+  "sex": "M",
+  "summit": false
+}</code></div>
+
+            <h4>3. get_activity_streams</h4>
+            <div class="endpoint">
+                <div class="endpoint-method">GET</div>
+                <strong>/activities/{id}/streams</strong>
+                <p>Obtiene datos detallados de una actividad (velocidad, altitud, etc).</p>
+            </div>
+
+            <h3>Ejemplo de Integración con JavaScript</h3>
+            <div class="code-block"><code>// Función para conectar y obtener actividades
+async function fetchStravaActivities() {
+  try {
+    // 1. Autenticar con Strava
+    const auth = await stravaAuth.login();
+
+    // 2. Obtener lista de actividades
+    const activities = await stravaClient.getActivities();
+
+    // 3. Procesar cada actividad
+    let totalKm = 0;
+    activities.forEach(activity => {
+      if (activity.type === 'Ride') {
+        const km = activity.distance / 1000; // convertir metros a km
+        totalKm += km;
+      }
+    });
+
+    // 4. Calcular CO2 evitado
+    const CO2_PER_KM = 0.120; // kg
+    const co2Avoided = totalKm * CO2_PER_KM;
+
+    // 5. Emitir tokens en Stellar
+    const tokensMint = await stellarBridge.mintTokens(
+      walletAddress,
+      co2Avoided // 1:1 ratio kg:tokens
+    );
+
+    return {
+      totalKm,
+      co2Avoided,
+      tokensMinted: tokensMint
+    };
+
+  } catch (error) {
+    console.error('Error en integración Strava:', error);
+  }
+}
+
+// Ejecutar sincronización cada 24 horas
+setInterval(fetchStravaActivities, 24 * 60 * 60 * 1000);</code></div>
+
+            <h3>Configuración de Variables de Entorno</h3>
+            <div class="code-block"><code># .env
+STRAVA_CLIENT_ID=your_client_id
+STRAVA_CLIENT_SECRET=your_client_secret
+STRAVA_REDIRECT_URI=https://yourapp.com/callback
+
+STELLAR_NETWORK=public
+STELLAR_ISSUER_SECRET=your_issuer_secret
+STELLAR_ASSET_CODE=BIKE
+
+MCP_STRAVA_ENABLED=true</code></div>
+        </div>
+
+        <!-- SMART CONTRACTS SECTION -->
+        <div id="smart-contracts" class="section">
+            <h2>📜 Smart Contracts en Stellar</h2>
+
+            <div class="warning-box">
+                <strong>⚠️ Nota:</strong> Stellar utiliza Stellar Smart Contracts (Soroban) para automatizar la emisión de tokens.
+            </div>
+
+            <h3>Configuración del Token BIKE</h3>
+            <div class="code-block"><code>// Configuración del asset BIKE en Stellar
+{
+  "asset_code": "BIKE",
+  "asset_issuer": "GBRIDE...", // Dirección del emisor
+  "amount": "1000000000",  // Supply máximo
+  "issuer_public_key": "GBRIDE...",
+  "issuer_secret_key": "SBRIDE..." // Solo en servidor
+}
+
+// Parámetros del token
+const BIKE = {
+  code: 'BIKE',
+  issuer: new PublicKey('GBRIDE...'),
+  supply: '1000000000',
+  decimals: 2
+};</code></div>
+
+            <h3>Función de Minting Automático</h3>
+            <div class="code-block"><code>// Smart Contract Soroban (Rust)
+#[contractimpl]
+pub struct BikeRewards;
+
+#[contractimpl]
+impl BikeRewards {
+    /// Emite tokens BIKE basado en CO2 evitado
+    pub fn mint_bike_tokens(
+        env: Env,
+        user_wallet: Address,
+        co2_kg: i128,
+    ) -> Result<i128, Error> {
+        // Validar entrada
+        if co2_kg <= 0 {
+            return Err(Error::InvalidAmount);
+        }
+
+        // 1 kg CO2 = 1 BIKE token (con 2 decimales)
+        let amount_to_mint = co2_kg * 100;
+
+        // Emitir tokens
+        let token = env.invoke_contract::<i128>(
+            &env.current_contract_address(),
+            &symbol_short!("mint"),
+            invoke_contract_args![env, user_wallet, amount_to_mint],
+        )?;
+
+        // Registrar evento
+        env.events().publish(
+            (symbol_short!("mint"), user_wallet, co2_kg),
+            amount_to_mint,
+        );
+
+        Ok(amount_to_mint)
+    }
+}</code></div>
+
+            <h3>Transferencias y Canjes</h3>
+            <div class="code-block"><code>// Transferencia de tokens entre usuarios
+async function transferBikeTokens(
+  fromWallet,
+  toWallet,
+  amountTokens
+) {
+  const transaction = new TransactionBuilder(sourceAccount, {
+    fee: BASE_FEE,
+    networkPassphrase: Networks.PUBLIC_NETWORK,
+  })
+    .addOperation(
+      Operation.payment({
+        destination: toWallet,
+        asset: Asset.native(),
+        amount: amountTokens.toString(),
+      })
+    )
+    .setTimeout(30)
+    .build();
+
+  transaction.sign(Keypair.fromSecret(fromWallet));
+  return await server.submitTransaction(transaction);
+}</code></div>
+        </div>
+
+        <!-- DEPLOYMENT SECTION -->
+        <div id="deployment" class="section">
+            <h2>🚀 Deployment e Implementación</h2>
+
+            <h3>Paso a Paso de Deployment</h3>
+
+            <h4>1. Configuración Local</h4>
+            <div class="code-block"><code># Instalar dependencias
+npm install @stellar/js-sdk
+npm install stellar-sdk
+npm install dotenv
+
+# Configurar MCP para Strava
+claude mcp add --transport http strava \
+  "https://strava-mcp.example.com"
+
+# Autenticar
+claude /mcp -> Authenticate -> Strava</code></div>
+
+            <h4>2. Crear Wallet Stellar Maestro</h4>
+            <div class="code-block"><code>// Generar keypair para el emisor
+const issuerKeypair = Keypair.random();
+console.log('Public Key:', issuerKeypair.publicKey());
+console.log('Secret Key:', issuerKeypair.secret());
+
+// Guardar en .env
+STELLAR_ISSUER_PUBLIC=GBRIDE...
+STELLAR_ISSUER_SECRET=SBRIDE...</code></div>
+
+            <h4>3. Crear Trust Line en Stellar</h4>
+            <div class="code-block"><code>// El usuario debe establecer confianza en el token BIKE
+const trustOperation = Operation.changeTrust({
+  asset: new Asset('BIKE', 'GBRIDE...'),
+  limit: '1000000'
+});
+
+// Construir y firmar transacción
+const transaction = new TransactionBuilder(userAccount, {
+  fee: BASE_FEE,
+  networkPassphrase: Networks.PUBLIC_NETWORK,
+})
+  .addOperation(trustOperation)
+  .setTimeout(30)
+  .build();
+
+transaction.sign(userKeypair);
+await server.submitTransaction(transaction);</code></div>
+
+            <h4>4. Desplegar Smart Contract</h4>
+            <div class="code-block"><code># Compilar Soroban Smart Contract
+soroban contract build
+
+# Desplegar a testnet
+soroban contract deploy \
+  --source [ISSUER_SECRET] \
+  --network testnet \
+  --wasm target/wasm32-unknown-unknown/release/bike_rewards.wasm
+
+# Verificar en Stellar Expert
+# https://stellar.expert/explorer/testnet/contract/[CONTRACT_ID]</code></div>
+
+            <h4>5. Integración Frontend</h4>
+            <div class="code-block"><code>// En tu aplicación web (strava-stellar-rewards.html)
+const bikeRewards = {
+  async mintTokensForUser(userWallet, co2kg) {
+    // Llamar al smart contract
+    const result = await stellarContract.mint_bike_tokens(
+      userWallet,
+      parseInt(co2kg * 100)
+    );
+
+    return {
+      status: 'success',
+      tokensMinted: co2kg,
+      txHash: result.hash
+    };
+  },
+
+  async getBalance(wallet) {
+    const account = await server.loadAccount(wallet);
+    return account.balances.find(b => b.asset_code === 'BIKE');
+  }
+};</code></div>
+
+            <h3>URLs Importantes</h3>
+            <div class="info-box">
+                <ul class="feature-list">
+                    <li><strong>Stellar Testnet:</strong> https://horizon-testnet.stellar.org</li>
+                    <li><strong>Stellar Mainnet:</strong> https://horizon.stellar.org</li>
+                    <li><strong>Stellar Expert:</strong> https://stellar.expert</li>
+                    <li><strong>Soroban Docs:</strong> https://developers.stellar.org/docs/smart-contracts</li>
+                    <li><strong>Strava API:</strong> https://developers.strava.com</li>
+                </ul>
+            </div>
+
+            <h3>Testing en Testnet</h3>
+            <div class="code-block"><code># Obtener testnet lumens (XLM)
+curl "https://friendbot.stellar.org?addr=GBRIDE..."
+
+# Verificar balance
+curl "https://horizon-testnet.stellar.org/accounts/GBRIDE..."
+
+# Ver transacciones del wallet
+curl "https://stellar.expert/api/v2/accounts/GBRIDE..."</code></div>
+
+            <h3>Checklist de Seguridad</h3>
+            <div class="warning-box">
+                <div class="feature-list">
+                    <li>✓ Mantener secret keys en variables de entorno</li>
+                    <li>✓ Usar HTTPS para todas las conexiones</li>
+                    <li>✓ Validar datos de Strava antes de procesar</li>
+                    <li>✓ Implementar rate limiting en API</li>
+                    <li>✓ Auditar transacciones Stellar regularmente</li>
+                    <li>✓ Usar addresses de testnet para desarrollo</li>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🌱 Conectando ciclismo, tecnología y sostenibilidad</p>
+        <p>Documentación © 2026 | Stellar + Strava Integration</p>
+    </footer>
+
+    <script>
+        function switchTab(tabName) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Desactivar todos los tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar sección seleccionada
+            document.getElementById(tabName).classList.add('active');
+
+            // Activar tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

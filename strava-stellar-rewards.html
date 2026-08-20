@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strava → Stellar Rewards | Convierte tus km en tokens</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FC5200;
+            --stellar: #13C41E;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --text: #333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .step:nth-child(1) { animation-delay: 0.1s; }
+        .step:nth-child(2) { animation-delay: 0.2s; }
+        .step:nth-child(3) { animation-delay: 0.3s; }
+        .step:nth-child(4) { animation-delay: 0.4s; }
+        .step:nth-child(5) { animation-delay: 0.5s; }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step h2 {
+            font-size: 1.5em;
+            color: var(--dark);
+        }
+
+        .step-content {
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .step-content p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e54a00;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: var(--stellar);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #0fa017;
+            transform: scale(1.05);
+        }
+
+        .btn-tertiary {
+            background: var(--light);
+            color: var(--dark);
+            border: 2px solid #ddd;
+        }
+
+        .btn-tertiary:hover {
+            background: #e8e8e8;
+        }
+
+        .data-display {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .data-display strong {
+            color: var(--primary);
+        }
+
+        .stat-box {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 5px 5px 5px 0;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .conversion-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-item {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .flow-item-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .flow-item-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: var(--primary);
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, var(--stellar) 0%, #0fa017 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result-box h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-connected {
+            background: var(--stellar);
+        }
+
+        .status-disconnected {
+            background: #ff6b6b;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .info-box p {
+            color: #1565c0;
+            margin: 0;
+        }
+
+        .activity-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 10px;
+            background: #f5f5f5;
+            margin: 5px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-km {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .conversion-flow {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .step-header {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚴 Strava → Stellar Rewards</h1>
+            <p>Convierte tus kilómetros en tokens blockchain</p>
+        </header>
+
+        <div class="step-container">
+            <!-- Step 1: Strava Connection -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h2>Conecta tu cuenta Strava</h2>
+                </div>
+                <div class="step-content">
+                    <p>Autoriza acceso a tus datos de actividades. Strava comparte tus km, tiempo de pedaleo y rutas.</p>
+                    <div class="info-box">
+                        <p>✓ Tus datos siempre serán privados. Solo usamos distancia y tipo de actividad.</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="connectStrava()">
+                            <span id="strava-btn-text">Conectar Strava</span>
+                        </button>
+                        <button class="btn-tertiary" onclick="simulateStravaData()">Cargar datos de ejemplo</button>
+                    </div>
+                    <div id="strava-status" class="data-display hidden">
+                        <span class="status-indicator status-disconnected"></span>
+                        <strong>Estado:</strong> <span id="status-text">Desconectado</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Calculate CO2 -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h2>Calcula CO2 evitado</h2>
+                </div>
+                <div class="step-content">
+                    <p>Por cada km que pedaleas, evitas emitir CO2 que habría generado un auto.</p>
+                    <div class="conversion-flow">
+                        <div class="flow-item">
+                            <div class="flow-item-label">Tus km</div>
+                            <div class="flow-item-value" id="total-km">0</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-item">
+                            <div class="flow-item-label">CO2 ahorrado</div>
+                            <div class="flow-item-value" id="co2-saved">0 kg</div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <p>📊 Promedio: 120g de CO2 evitado por km en auto.</p>
+                    </div>
+                    <div class="data-display">
+                        <strong>Fórmula:</strong> km × 0.120 kg = CO2 evitado<br>
+                        <strong>Ejemplo:</strong> 100 km × 0.120 = 12 kg CO2
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Token Conversion -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h2>Convierte a tokens Stellar</h2>
+                </div>
+                <div class="step-content">
+                    <p>Tus kg de CO2 evitado se convierten 1:1 en tokens BIKE en la red Stellar.</p>
+                    <div class="conversion-flow">
+                        <div class="flow-item">
+                            <div class="flow-item-label">CO2 evitado</div>
+                            <div class="flow-item-value" id="co2-for-tokens">0 kg</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-item">
+                            <div class="flow-item-label">Tokens BIKE</div>
+                            <div class="flow-item-value" id="tokens-earned">0</div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <p>🔗 Smart Contract Stellar: <code>GBRIDE...BIKE</code></p>
+                    </div>
+                    <div class="data-display">
+                        <strong>Ratio:</strong> 1 kg CO2 = 1 token BIKE<br>
+                        <strong>Red:</strong> Stellar Mainnet<br>
+                        <strong>Símbolo:</strong> BIKE
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Use Rewards -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <h2>Canjea tus recompensas</h2>
+                </div>
+                <div class="step-content">
+                    <p>Usa tus tokens BIKE para:</p>
+                    <div style="margin: 20px 0;">
+                        <div class="stat-box">☕ Descuento en cafés asociados</div>
+                        <div class="stat-box">🚲 Parqueaderos de bicicleta</div>
+                        <div class="stat-box">🔧 Mantenimiento de bici</div>
+                        <div class="stat-box">👥 Transferir a amigos</div>
+                    </div>
+                    <div class="info-box">
+                        <p>💰 Cada token BIKE vale aprox. $0.50 USD en el mercado.</p>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="redeemTokens()">
+                            Canjear mis tokens
+                        </button>
+                        <button class="btn-tertiary" onclick="transferTokens()">
+                            Transferir a amigo
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Track Impact -->
+            <div class="step">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <h2>Visualiza tu impacto</h2>
+                </div>
+                <div class="step-content">
+                    <p>Tu contribución al planeta en tiempo real.</p>
+                    <div id="impact-summary" class="data-display">
+                        <div style="margin: 10px 0;">
+                            <strong>Kilómetros totales:</strong> <span id="impact-km">0</span> km
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>CO2 evitado:</strong> <span id="impact-co2">0</span> kg
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>Tokens ganados:</strong> <span id="impact-tokens">0</span> 🪙
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>Equivalente a:</strong> <span id="impact-equiv">0</span> árboles plantados
+                        </div>
+                    </div>
+                    <div class="result-box">
+                        <h3>Tu wallet Stellar</h3>
+                        <div class="result-value" id="final-balance">0 BIKE</div>
+                        <p id="wallet-address" style="font-size: 0.8em; word-break: break-all;">Conecta Strava para generar dirección</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado global
+        const state = {
+            stravaConnected: false,
+            activities: [],
+            totalKm: 0,
+            co2Saved: 0,
+            tokensBike: 0,
+            walletAddress: null
+        };
+
+        // Constantes de conversión
+        const CO2_PER_KM = 0.120; // kg
+        const TOKENS_PER_CO2 = 1; // 1:1 ratio
+        const TREES_PER_KG_CO2 = 0.025; // Aproximado
+
+        function connectStrava() {
+            const btn = document.querySelector('[onclick="connectStrava()"]');
+            btn.innerHTML = '<span class="loading"></span> Conectando...';
+
+            // Simulación de conexión
+            setTimeout(() => {
+                state.stravaConnected = true;
+                updateStravaStatus();
+                btn.innerHTML = '✓ Strava Conectado';
+                btn.disabled = true;
+
+                // Auto-cargar datos
+                loadStravaActivities();
+            }, 1500);
+        }
+
+        function simulateStravaData() {
+            state.stravaConnected = true;
+            updateStravaStatus();
+
+            // Datos de ejemplo
+            state.activities = [
+                { name: 'Morning ride', distance: 15.5, date: '2026-08-20' },
+                { name: 'Evening cycle', distance: 22.3, date: '2026-08-19' },
+                { name: 'Commute', distance: 8.7, date: '2026-08-18' },
+                { name: 'Long weekend ride', distance: 45.2, date: '2026-08-17' },
+                { name: 'Quick loop', distance: 12.1, date: '2026-08-16' }
+            ];
+
+            loadStravaActivities();
+        }
+
+        function loadStravaActivities() {
+            if (!state.stravaConnected) return;
+
+            // Calcular totales
+            state.totalKm = state.activities.reduce((sum, a) => sum + a.distance, 0);
+            state.co2Saved = state.totalKm * CO2_PER_KM;
+            state.tokensBike = state.co2Saved * TOKENS_PER_CO2;
+
+            // Generar wallet (simulado)
+            state.walletAddress = generateWalletAddress();
+
+            updateUI();
+        }
+
+        function generateWalletAddress() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let address = 'G';
+            for (let i = 0; i < 55; i++) {
+                address += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return address;
+        }
+
+        function updateStravaStatus() {
+            const statusDiv = document.getElementById('strava-status');
+            const indicator = statusDiv.querySelector('.status-indicator');
+            const statusText = document.getElementById('status-text');
+
+            statusDiv.classList.remove('hidden');
+
+            if (state.stravaConnected) {
+                indicator.classList.remove('status-disconnected');
+                indicator.classList.add('status-connected');
+                statusText.textContent = '✓ Conectado a Strava';
+            }
+        }
+
+        function updateUI() {
+            // Actualizar Step 2
+            document.getElementById('total-km').textContent = state.totalKm.toFixed(1);
+            document.getElementById('co2-saved').textContent = state.co2Saved.toFixed(2) + ' kg';
+
+            // Actualizar Step 3
+            document.getElementById('co2-for-tokens').textContent = state.co2Saved.toFixed(2) + ' kg';
+            document.getElementById('tokens-earned').textContent = state.tokensBike.toFixed(0);
+
+            // Actualizar Step 5
+            document.getElementById('impact-km').textContent = state.totalKm.toFixed(1);
+            document.getElementById('impact-co2').textContent = state.co2Saved.toFixed(2);
+            document.getElementById('impact-tokens').textContent = state.tokensBike.toFixed(0);
+
+            const trees = state.co2Saved * TREES_PER_KG_CO2;
+            document.getElementById('impact-equiv').textContent = trees.toFixed(1);
+
+            document.getElementById('final-balance').textContent = state.tokensBike.toFixed(0) + ' BIKE';
+            document.getElementById('wallet-address').textContent = state.walletAddress || 'Conecta Strava para generar dirección';
+        }
+
+        function redeemTokens() {
+            if (state.tokensBike <= 0) {
+                alert('No tienes tokens para canjear. ¡Pedalea más!');
+                return;
+            }
+            alert(`¿Canjear ${state.tokensBike.toFixed(0)} tokens BIKE? Valor aprox: $${(state.tokensBike * 0.50).toFixed(2)}`);
+        }
+
+        function transferTokens() {
+            if (state.tokensBike <= 0) {
+                alert('No tienes tokens para transferir.');
+                return;
+            }
+            const recipient = prompt('Dirección Stellar del destinatario:');
+            if (recipient) {
+                alert(`Transferencia de ${state.tokensBike.toFixed(0)} BIKE a ${recipient} completada.`);
+            }
+        }
+
+        // Inicializar
+        updateUI();
+    </script>
+</body>
+</html>
