@@ -18,6 +18,28 @@ Convierte tus kilómetros en bicicleta en tokens blockchain reales en Stellar.
 - **Auth**: OAuth 2.0 (seguro, lado servidor)
 - **Hosting**: Vercel
 
+## 🪙 Crear Token BIKE
+
+El proyecto incluye un script para crear el token BIKE en Stellar Testnet:
+
+```bash
+# Instalar dependencias
+npm install stellar-sdk
+
+# Crear el token
+node create-token.js
+```
+
+**El script:**
+- ✅ Crea keypairs para emisor y distribuidor
+- ✅ Obtiene fondos de Friendbot (testnet faucet)
+- ✅ Crea trust line para asset BIKE
+- ✅ Emite 1,000,000 tokens BIKE
+- ✅ Guarda credenciales en `.env.local`
+- ✅ Muestra links a Stellar Expert
+
+**Nota:** Genera credenciales aleatorias. Para usar credenciales existentes en la app, actualiza el Emisor en `strava-stellar-rewards.html` Step 3.
+
 ## 🚀 Quick Start
 
 ### 1. Requirements
