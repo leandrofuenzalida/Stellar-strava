@@ -442,12 +442,17 @@
                         </div>
                     </div>
                     <div class="info-box">
-                        <p>🔗 Smart Contract Stellar: <code>GBRIDE...BIKE</code></p>
+                        <p>🔗 Token BIKE en Stellar Testnet</p>
+                        <p style="font-size: 0.85em; word-break: break-all; margin-top: 8px;">
+                            <strong>Emisor:</strong> GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR
+                        </p>
                     </div>
                     <div class="data-display">
                         <strong>Ratio:</strong> 1 kg CO2 = 1 token BIKE<br>
-                        <strong>Red:</strong> Stellar Mainnet<br>
-                        <strong>Símbolo:</strong> BIKE
+                        <strong>Red:</strong> Stellar Testnet<br>
+                        <strong>Símbolo:</strong> BIKE<br>
+                        <strong>Supply:</strong> 1,000,000 BIKE<br>
+                        <a href="https://stellar.expert/explorer/testnet/asset/BIKE-GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR" target="_blank" style="color: #FC5200; text-decoration: none;">📊 Ver en Stellar Expert →</a>
                     </div>
                 </div>
             </div>
@@ -575,12 +580,8 @@
         }
 
         function generateWalletAddress() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let address = 'G';
-            for (let i = 0; i < 55; i++) {
-                address += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return address;
+            // Dirección real del distribuidor BIKE en Stellar Testnet
+            return 'GBM77XIRHUWHUAUSFUSDGJBMEOJSXZPXIBSOYDO4YCZA77SHQ7TEAYHY';
         }
 
         function updateStravaStatus() {
