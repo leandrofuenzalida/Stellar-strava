@@ -47,9 +47,8 @@ export default async function handler(req, res) {
     } else {
       // PASO 0: Iniciar flujo OAuth - redirigir a Strava
       const clientId = process.env.STRAVA_CLIENT_ID;
-      const protocol = process.env.VERCEL_URL ? 'https' : 'http';
-      const host = process.env.VERCEL_URL || 'localhost:3000';
-      const redirectUri = `${protocol}://${host}/api/strava-auth`;
+      // Usar production URL para Strava (no preview URLs que cambian con cada deploy)
+      const redirectUri = process.env.STRAVA_REDIRECT_URL || 'https://stellar-strava.vercel.app/api/strava-auth';
       const scopes = 'read,activity:read_all';
 
       const stravaAuthUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}`;
