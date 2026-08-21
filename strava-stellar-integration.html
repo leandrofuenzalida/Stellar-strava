@@ -535,16 +535,16 @@ MCP_STRAVA_ENABLED=true</code></div>
             <div class="code-block"><code>// Configuración del asset BIKE en Stellar
 {
   "asset_code": "BIKE",
-  "asset_issuer": "GBRIDE...", // Dirección del emisor
+  "asset_issuer": "GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR", // Dirección del emisor
   "amount": "1000000000",  // Supply máximo
-  "issuer_public_key": "GBRIDE...",
+  "issuer_public_key": "GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR",
   "issuer_secret_key": "SBRIDE..." // Solo en servidor
 }
 
 // Parámetros del token
 const BIKE = {
   code: 'BIKE',
-  issuer: new PublicKey('GBRIDE...'),
+  issuer: new PublicKey('GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR'),
   supply: '1000000000',
   decimals: 2
 };</code></div>
@@ -639,13 +639,13 @@ console.log('Public Key:', issuerKeypair.publicKey());
 console.log('Secret Key:', issuerKeypair.secret());
 
 // Guardar en .env
-STELLAR_ISSUER_PUBLIC=GBRIDE...
+STELLAR_ISSUER_PUBLIC=GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR
 STELLAR_ISSUER_SECRET=SBRIDE...</code></div>
 
             <h4>3. Crear Trust Line en Stellar</h4>
             <div class="code-block"><code>// El usuario debe establecer confianza en el token BIKE
 const trustOperation = Operation.changeTrust({
-  asset: new Asset('BIKE', 'GBRIDE...'),
+  asset: new Asset('BIKE', 'GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR'),
   limit: '1000000'
 });
 
@@ -710,13 +710,13 @@ const bikeRewards = {
 
             <h3>Testing en Testnet</h3>
             <div class="code-block"><code># Obtener testnet lumens (XLM)
-curl "https://friendbot.stellar.org?addr=GBRIDE..."
+curl "https://friendbot.stellar.org?addr=GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR"
 
 # Verificar balance
-curl "https://horizon-testnet.stellar.org/accounts/GBRIDE..."
+curl "https://horizon-testnet.stellar.org/accounts/GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR"
 
 # Ver transacciones del wallet
-curl "https://stellar.expert/api/v2/accounts/GBRIDE..."</code></div>
+curl "https://stellar.expert/api/v2/accounts/GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR"</code></div>
 
             <h3>Checklist de Seguridad</h3>
             <div class="warning-box">
