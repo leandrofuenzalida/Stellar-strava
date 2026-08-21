@@ -1,0 +1,23 @@
+{
+  "name": "strava-stellar-rewards",
+  "version": "1.0.0",
+  "description": "Convert Strava cycling kilometers into Stellar blockchain tokens",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build required for serverless functions'",
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "strava",
+    "stellar",
+    "blockchain",
+    "tokens",
+    "eco-friendly"
+  ],
+  "author": "leandro.fuenzalida@gmail.com",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  }
+}

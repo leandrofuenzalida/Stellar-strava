@@ -1,227 +1,223 @@
 # 🚴 Strava → Stellar Rewards
 
-Sistema tokenizado que convierte tus kilómetros en bicicleta en tokens blockchain Stellar.
+Convierte tus kilómetros en bicicleta en tokens blockchain reales en Stellar.
 
-## 📋 Descripción
+## ✨ Características
 
-Este proyecto integra **Strava** (plataforma de deportes) con **Stellar Blockchain** para crear un sistema de recompensas sostenible:
+- **Strava Integration**: Conecta tu cuenta de Strava (OAuth seguro)
+- **CO2 Calculation**: Calcula automáticamente el CO2 que evitas al pedalear
+- **Stellar Tokens**: Recibe tokens BIKE reales en Stellar Testnet
+- **Blockchain Rewards**: Canjea o transfiere tus tokens a otros
+- **Impact Tracking**: Visualiza tu impacto ambiental
 
-- **Sincroniza** tus actividades de Strava
-- **Calcula** el CO2 que evitas emitir (120g por km)
-- **Emite** tokens BIKE en la red Stellar (1:1 ratio kg CO2 → BIKE)
-- **Canjea** tus tokens por descuentos o transfiere a amigos
-- **Visualiza** tu impacto ambiental en tiempo real
+## 🏗️ Tecnología
 
-## 🎯 Características Principales
+- **Frontend**: HTML5 + CSS3 + Vanilla JavaScript
+- **Backend**: Vercel Serverless Functions (Node.js)
+- **Blockchain**: Stellar Testnet + BIKE Token
+- **Auth**: OAuth 2.0 (seguro, lado servidor)
+- **Hosting**: Vercel
 
-✓ **Integración MCP Strava** - Conexión directa con tus datos de ciclismo  
-✓ **Cálculos Automáticos** - CO2 evitado basado en km reales  
-✓ **Blockchain Real** - Tokens en la red Stellar pública  
-✓ **Interfaz Interactiva** - Visualización paso a paso del proceso  
-✓ **Completamente Funcional** - Datos de ejemplo incluidos  
+## 🚀 Quick Start
 
-## 🚀 Acceder a las Páginas
-
-### 1. **Landing Page Principal** (Comienza aquí)
-```
-https://leandrofuenzalida.github.io/strava-stellar.html
-```
-Descripción general, características y acceso a otros recursos.
-
-### 2. **Calculadora Interactiva**
-```
-https://leandrofuenzalida.github.io/strava-stellar-rewards.html
-```
-Interfaz visual paso a paso:
-- Conectar Strava
-- Calcular CO2 evitado
-- Ver conversión a tokens BIKE
-- Canjear recompensas
-- Visualizar impacto
-
-**Prueba con datos de ejemplo** sin conectar Strava realmente.
-
-### 3. **Documentación Técnica**
-```
-https://leandrofuenzalida.github.io/strava-stellar-integration.html
-```
-Guía técnica con 4 secciones:
-- **Arquitectura** - Componentes y flujo de datos
-- **MCP Integration** - Herramientas Strava y ejemplos de código
-- **Smart Contracts** - Configuración de tokens en Stellar Soroban
-- **Deployment** - Paso a paso para implementar
-
-## 📊 Cómo Funciona
-
-```
-┌─────────────────┐
-│  Usuario Strava │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────┐
-│  Strava MCP Server  │  ← Obtiene actividades (km)
-└────────┬────────────┘
-         │
-         ▼
-┌─────────────────────┐
-│  Data Processor     │  ← Calcula CO2 (km × 0.120)
-└────────┬────────────┘
-         │
-         ▼
-┌─────────────────────┐
-│  Stellar Contract   │  ← Emite tokens BIKE (1:1)
-└────────┬────────────┘
-         │
-         ▼
-┌──────────────────┐
-│  User's Wallet   │  ← Recibe tokens BIKE
-└──────────────────┘
-```
-
-## 🔧 Stack Técnico
-
-### Frontend
-- **HTML5 / CSS3 / JavaScript** - Interfaz responsiva
-- **Gradientes y animaciones** - Diseño moderno
-- **Sin dependencias externas** - Todo incluido en archivos HTML
-
-### Backend (MCP)
-- **Strava MCP Server** - Integración con API de Strava
-- **Data Processing** - Cálculos de CO2
-- **Stellar SDK** - Interacción con blockchain
-
-### Blockchain
-- **Red:** Stellar Mainnet / Testnet
-- **Token:** BIKE (asset customizado)
-- **Smart Contracts:** Soroban (Rust)
-- **Estándar:** SEP-0041 (Stellar Assets)
-
-## 📈 Fórmulas de Conversión
-
-```
-1. Kilómetros en bicicleta
-   km = Suma de distancias de Strava
-
-2. CO2 Evitado
-   CO2 (kg) = km × 0.120
-   Ejemplo: 100 km × 0.120 = 12 kg CO2
-
-3. Tokens BIKE
-   BIKE tokens = CO2 (kg) × 1
-   Ejemplo: 12 kg = 12 BIKE tokens
-
-4. Valor Aproximado
-   Valor USD ≈ BIKE tokens × $0.50
-   Ejemplo: 12 BIKE ≈ $6.00
-```
-
-## 🔐 Seguridad y Privacidad
-
-✓ **Datos privados** - Solo usamos distancia y tipo de actividad  
-✓ **No almacenamos rutas** - Información mínima procesada  
-✓ **Blockchain descentralizado** - Tus tokens bajo tu control  
-✓ **Ledger abierto** - Todas las transacciones verificables  
-✓ **HTTPS/MCP seguro** - Comunicación encriptada  
-
-## 🛠️ Configuración Local (Desarrollo)
-
-### Requisitos
+### 1. Requirements
 - Node.js 18+
-- Git
-- Stellar CLI (para deployment)
+- Vercel CLI: `npm install -g vercel`
+- Strava App (crear en https://www.strava.com/settings/apps)
 
-### Setup
+### 2. Local Development
+
 ```bash
-# Clonar repositorio
-git clone https://github.com/leandrofuenzalida/leandrofuenzalida.github.io
+# Clone y setup
+git clone https://github.com/leandrofuenzalida/leandrofuenzalida.github.io.git
 cd leandrofuenzalida.github.io
 
-# Instalar dependencias MCP
-npm install @stellar/js-sdk
-npm install dotenv
+# Environment variables
+cp .env.example .env.local
+# Edita .env.local con tus Strava credentials
 
-# Configurar MCP Strava
-claude mcp add --transport http strava \
-  "https://strava-mcp.example.com"
-
-# Abrir en navegador
-open strava-stellar.html
+# Desarrollar localmente
+vercel dev
+# Abre http://localhost:3000/strava-stellar-rewards.html
 ```
 
-### Variables de Entorno (.env)
-```env
-# Strava
-STRAVA_CLIENT_ID=your_client_id
-STRAVA_CLIENT_SECRET=your_client_secret
+### 3. Deploy a Vercel
 
-# Stellar
-STELLAR_NETWORK=public
-STELLAR_ISSUER_SECRET=SBRIDE...
+```bash
+# Conectar con Vercel
+vercel
 
-# MCP
-MCP_STRAVA_ENABLED=true
+# Agregar variables de entorno
+vercel env add STRAVA_CLIENT_ID
+vercel env add STRAVA_CLIENT_SECRET
+
+# Redeploy
+vercel --prod
 ```
 
-## 📱 Uso de la Calculadora Interactiva
+## 📚 Documentación
 
-1. **Abre** `strava-stellar-rewards.html`
-2. **Conecta Strava** o carga datos de ejemplo
-3. **Observa** cómo se calculan automáticamente:
-   - Total de km
-   - CO2 evitado
-   - Tokens BIKE ganados
-4. **Canjea** o transfiere tus tokens
-5. **Visualiza** tu impacto ambiental
+- **[OAuth Setup Guide](./OAUTH_SETUP.md)** - Cómo configurar OAuth de forma segura
+- **[Stellar Token Details](./strava-stellar-integration.html)** - Información del token BIKE
 
-## 💡 Casos de Uso
+## 🔒 Seguridad
 
-### Para Usuarios
-- Ganar recompensas reales por pedalear
-- Contribuir al medio ambiente con incentivos
-- Transferir tokens a amigos
-- Canjear por descuentos en negocios locales
-- Participar en competencias gamificadas
+Este proyecto implementa OAuth 2.0 de forma SEGURA:
 
-### Para Negocios
-- Atraer clientes ecológicos
-- Crear programas de fidelización
-- Aceptar pagos en BIKE tokens
-- Promocionar sostenibilidad
+✅ **CLIENT_SECRET solo en servidor** (process.env)  
+✅ **Tokens en cookies HttpOnly** (no accesible desde JS)  
+✅ **HTTPS required** (Secure flag)  
+✅ **SameSite=Strict CSRF protection**  
 
-### Para Ciudades
-- Incentivar transporte sostenible
-- Reducir congestión vehicular
-- Promover salud y bienestar
-- Cumplir objetivos de CO2
+❌ No exponemos credenciales en el frontend  
+❌ No guardamos tokens en localStorage  
+❌ No hacemos llamadas directas a Strava API desde el navegador  
 
-## 📚 Documentación Relacionada
+[Ver arquitectura completa →](./OAUTH_SETUP.md)
 
-- [Strava API Developers](https://developers.strava.com)
-- [Stellar Developers](https://developers.stellar.org)
-- [Soroban Smart Contracts](https://developers.stellar.org/docs/smart-contracts)
-- [MCP Protocol](https://modelcontextprotocol.io)
+## 📊 BIKE Token
+
+```
+Nombre:        BIKE
+Emisor:        GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR
+Distribuidor:  GBM77XIRHUWHUAUSFUSDGJBMEOJSXZPXIBSOYDO4YCZA77SHQ7TEAYHY
+Red:           Stellar Testnet
+Supply:        1,000,000 BIKE
+Ratio:         1 kg CO2 = 1 BIKE
+```
+
+Ver en Stellar Expert:
+https://stellar.expert/explorer/testnet/asset/BIKE-GBNM3UZPOXQZOBGDQPQSO7ACUQTBA57DUCL7M5CMFHVSJYCZVCWMMZTR
+
+## 📁 Estructura del Proyecto
+
+```
+.
+├── strava-stellar-rewards.html      ← Aplicación principal
+├── strava-stellar.html              ← Landing page
+├── strava-stellar-integration.html   ← Documentación técnica
+├── api/
+│   ├── strava-auth.js              ← OAuth flow (SEGURO)
+│   ├── strava-activities.js         ← Obtiene actividades
+│   └── strava-disconnect.js         ← Limpia sesión
+├── package.json                     ← Node.js config
+├── vercel.json                      ← Vercel config
+├── .env.example                     ← Template variables
+├── .gitignore                       ← Git ignore rules
+├── OAUTH_SETUP.md                   ← OAuth documentation
+└── README.md                        ← Este archivo
+```
+
+## 🔄 Flujo de la Aplicación
+
+```
+1. Usuario abre strava-stellar-rewards.html
+   ↓
+2. Hace clic en "Conectar Strava"
+   ↓
+3. Redirige a /api/strava-auth (backend)
+   ↓
+4. Backend redirige a strava.com (usuario autoriza)
+   ↓
+5. Strava redirige de vuelta a /api/strava-auth?code=xxx
+   ↓
+6. Backend intercambia código por access_token (SEGURO)
+   ↓
+7. Backend guarda token en cookie HttpOnly
+   ↓
+8. Frontend obtiene actividades de /api/strava-activities
+   ↓
+9. Backend obtiene datos de Strava API
+   ↓
+10. Frontend calcula CO2 y tokens
+    ↓
+11. Muestra wallet Stellar con balance
+```
+
+## 🧪 Testing
+
+### Local
+```bash
+# Terminal 1: Vercel dev server
+vercel dev
+
+# Terminal 2: Abre en navegador
+open http://localhost:3000/strava-stellar-rewards.html
+
+# Test:
+1. Click "Conectar Strava"
+2. Autoriza en Strava.com
+3. Verifica que muestre tus actividades reales
+4. DevTools → Application → Cookies → strava_token debe existir
+```
+
+### En Vercel Production
+```bash
+# Después de deploy
+open https://your-vercel-url.vercel.app/strava-stellar-rewards.html
+
+# Los mismos pasos que local
+```
+
+## 🐛 Troubleshooting
+
+### "Not authenticated" error
+```
+Causa: Cookie expiró o no existe
+Fix:   Click "Conectar Strava" de nuevo
+```
+
+### OAuth callback no funciona
+```
+Causa: Vercel URL no configurada en Strava app
+Fix:   https://www.strava.com/settings/apps
+      → Authorization Callback Domain
+      → Debe ser tu-dominio.vercel.app (sin http://)
+```
+
+### API responds "Invalid client_id"
+```
+Causa: STRAVA_CLIENT_ID no está en env vars de Vercel
+Fix:   Vercel Dashboard → Settings → Environment Variables
+      → Agregar STRAVA_CLIENT_ID
+      → Redeploy
+```
+
+## 📈 Roadmap
+
+- [ ] Guardar tokens en base de datos (en lugar de memoria)
+- [ ] Soporte para múltiples redes blockchain
+- [ ] Dashboard de usuario con historial
+- [ ] Integración con parqueaderos y cafés
+- [ ] Mobile app
+- [ ] Leaderboards comunitarios
 
 ## 🤝 Contribuir
 
-Sugerencias y mejoras son bienvenidas. Puedes:
-- Reportar bugs
-- Proponer nuevas features
-- Mejorar documentación
-- Contribuir código
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el repo
+2. Crea una branch (`git checkout -b feature/amazing-feature`)
+3. Commit tus cambios (`git commit -m 'Add amazing feature'`)
+4. Push a la branch (`git push origin feature/amazing-feature`)
+5. Abre un Pull Request
 
 ## 📄 Licencia
 
-Código abierto con licencia MIT.
+MIT License - ver [LICENSE](LICENSE) para detalles
 
 ## 📧 Contacto
 
-Para preguntas o sugerencias:
 - Email: leandro.fuenzalida@gmail.com
-- GitHub Issues: [Reportar problema](https://github.com/leandrofuenzalida/leandrofuenzalida.github.io/issues)
+- GitHub: [@leandrofuenzalida](https://github.com/leandrofuenzalida)
+
+## 🙏 Agradecimientos
+
+- [Strava API](https://developers.strava.com/)
+- [Stellar Foundation](https://stellar.org/)
+- [Vercel](https://vercel.com/)
 
 ---
 
-**🌱 Pedalea hacia un futuro más sostenible**
-
-Hecho con ❤️ para la comunidad de ciclistas y el planeta.
+**⚠️ NOTA IMPORTANTE**: Este proyecto usa Stellar **Testnet** (no real money).
+Los tokens BIKE no tienen valor monetario real.

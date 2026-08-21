@@ -1,5 +1,28 @@
 {
-  "buildCommand": "echo 'No build required'",
-  "outputDirectory": ".",
-  "cleanUrls": true
+  "version": 2,
+  "public": true,
+  "env": {
+    "NEXT_PUBLIC_STELLAR_NETWORK": "testnet"
+  },
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x",
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*\\.html)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }

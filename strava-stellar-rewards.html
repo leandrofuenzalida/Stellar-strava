@@ -537,23 +537,68 @@
             const btn = document.querySelector('[onclick="connectStrava()"]');
             btn.innerHTML = '<span class="loading"></span> Conectando...';
 
-            // Simulación de conexión
-            setTimeout(() => {
-                state.stravaConnected = true;
-                updateStravaStatus();
-                btn.innerHTML = '✓ Strava Conectado';
-                btn.disabled = true;
+            // Redirigir a OAuth endpoint SEGURO (backend maneja CLIENT_SECRET)
+            window.location.href = '/api/strava-auth';
+        }
 
-                // Auto-cargar datos
-                loadStravaActivities();
-            }, 1500);
+        async function checkAuthStatus() {
+            // Verificar si el usuario ya está autenticado
+            try {
+                const response = await fetch('/api/strava-activities');
+                if (response.ok) {
+                    const data = await response.json();
+                    state.stravaConnected = true;
+                    state.activities = data.activities || [];
+                    state.totalKm = data.totalDistance || 0;
+                    state.co2Saved = data.totalCO2 || 0;
+                    state.tokensBike = state.co2Saved * TOKENS_PER_CO2;
+                    state.walletAddress = generateWalletAddress();
+                    updateStravaStatus();
+                    updateUI();
+                    console.log('✓ User already authenticated');
+                    return true;
+                }
+            } catch (err) {
+                console.log('Not authenticated yet:', err.message);
+            }
+            state.stravaConnected = false;
+            return false;
+        }
+
+        async function loadStravaActivities() {
+            if (!state.stravaConnected) return;
+
+            try {
+                const response = await fetch('/api/strava-activities');
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.log('Not authenticated, please connect to Strava');
+                        return;
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                state.activities = data.activities || [];
+                state.totalKm = data.totalDistance || 0;
+                state.co2Saved = data.totalCO2 || 0;
+                state.tokensBike = state.co2Saved * TOKENS_PER_CO2;
+                state.walletAddress = generateWalletAddress();
+
+                updateUI();
+            } catch (err) {
+                console.error('Error loading activities:', err);
+                alert('Error al cargar actividades de Strava');
+            }
         }
 
         function simulateStravaData() {
             state.stravaConnected = true;
             updateStravaStatus();
 
-            // Datos de ejemplo
+            // Datos de ejemplo para pruebas
             state.activities = [
                 { name: 'Morning ride', distance: 15.5, date: '2026-08-20' },
                 { name: 'Evening cycle', distance: 22.3, date: '2026-08-19' },
@@ -562,18 +607,9 @@
                 { name: 'Quick loop', distance: 12.1, date: '2026-08-16' }
             ];
 
-            loadStravaActivities();
-        }
-
-        function loadStravaActivities() {
-            if (!state.stravaConnected) return;
-
-            // Calcular totales
             state.totalKm = state.activities.reduce((sum, a) => sum + a.distance, 0);
             state.co2Saved = state.totalKm * CO2_PER_KM;
             state.tokensBike = state.co2Saved * TOKENS_PER_CO2;
-
-            // Generar wallet (simulado)
             state.walletAddress = generateWalletAddress();
 
             updateUI();
@@ -640,6 +676,26 @@
 
         // Inicializar
         updateUI();
+
+        // Verificar estado de autenticación al cargar la página
+        (async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.get('auth') === 'success') {
+                state.stravaConnected = true;
+                updateStravaStatus();
+                await loadStravaActivities();
+                // Limpiar URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (urlParams.get('auth') === 'error') {
+                const error = urlParams.get('error');
+                alert('Error en autenticación de Strava: ' + error);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                // Verificar si ya está autenticado
+                await checkAuthStatus();
+            }
+        })();
     </script>
 </body>
 </html>
