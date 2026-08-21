@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "outputDirectory": ".",
+  "buildCommand": "echo 'Static site with serverless functions'",
   "routes": [
     {
       "src": "/api/(.*)",

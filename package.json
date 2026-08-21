@@ -18,6 +18,6 @@
   "author": "leandro.fuenzalida@gmail.com",
   "license": "MIT",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   }
 }
