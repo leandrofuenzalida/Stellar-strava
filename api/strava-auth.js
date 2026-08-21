@@ -8,19 +8,38 @@ export default async function handler(req, res) {
       try {
         console.log('🔐 OAuth Token Exchange');
         console.log('Code:', code);
-        console.log('Client ID exists:', !!process.env.STRAVA_CLIENT_ID);
-        console.log('Client Secret exists:', !!process.env.STRAVA_CLIENT_SECRET);
+        console.log('STRAVA_CLIENT_ID:', process.env.STRAVA_CLIENT_ID);
+        console.log('STRAVA_CLIENT_SECRET exists:', !!process.env.STRAVA_CLIENT_SECRET);
+
+        if (!process.env.STRAVA_CLIENT_ID || !process.env.STRAVA_CLIENT_SECRET) {
+          return res.status(500).json({
+            error: 'Missing environment variables',
+            missing: {
+              clientId: !process.env.STRAVA_CLIENT_ID,
+              clientSecret: !process.env.STRAVA_CLIENT_SECRET
+            }
+          });
+        }
 
         // PASO 2: Intercambiar código por access token (SEGURO - en el backend)
+        const requestBody = {
+          client_id: parseInt(process.env.STRAVA_CLIENT_ID),
+          client_secret: process.env.STRAVA_CLIENT_SECRET,
+          code: code,
+          grant_type: 'authorization_code',
+        };
+
+        console.log('📤 Sending to Strava:', {
+          client_id: requestBody.client_id,
+          code: requestBody.code,
+          grant_type: requestBody.grant_type
+          // No log client_secret por seguridad
+        });
+
         const tokenResponse = await fetch('https://www.strava.com/oauth/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            client_id: parseInt(process.env.STRAVA_CLIENT_ID),
-            client_secret: process.env.STRAVA_CLIENT_SECRET,
-            code: code,
-            grant_type: 'authorization_code',
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         const tokenData = await tokenResponse.json();
