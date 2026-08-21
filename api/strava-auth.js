@@ -6,33 +6,41 @@ export default async function handler(req, res) {
     // Si Strava retorna con código de autorización
     if (code) {
       try {
+        console.log('🔐 OAuth Token Exchange');
+        console.log('Code:', code);
+        console.log('Client ID exists:', !!process.env.STRAVA_CLIENT_ID);
+        console.log('Client Secret exists:', !!process.env.STRAVA_CLIENT_SECRET);
+
         // PASO 2: Intercambiar código por access token (SEGURO - en el backend)
         const tokenResponse = await fetch('https://www.strava.com/oauth/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            client_id: process.env.STRAVA_CLIENT_ID,
-            client_secret: process.env.STRAVA_CLIENT_SECRET, // SEGURO aquí
+            client_id: parseInt(process.env.STRAVA_CLIENT_ID),
+            client_secret: process.env.STRAVA_CLIENT_SECRET,
             code: code,
             grant_type: 'authorization_code',
           }),
         });
 
         const tokenData = await tokenResponse.json();
+        console.log('Token response status:', tokenResponse.status);
+        console.log('Token data:', tokenData);
 
         if (tokenData.access_token) {
+          console.log('✅ Access token received');
           // PASO 3: Guardar el token (en producción, usar una DB)
-          // Para desarrollo, retornamos el token al frontend de forma segura
           res.setHeader('Set-Cookie', `strava_token=${tokenData.access_token}; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`);
 
           // Redirigir de vuelta a la app con éxito
           res.redirect('/strava-stellar-rewards.html?auth=success');
         } else {
-          res.status(400).json({ error: 'No access token received' });
+          console.log('❌ No access token in response');
+          res.status(400).json({ error: 'No access token received', details: tokenData });
         }
       } catch (err) {
-        console.error('OAuth token exchange error:', err);
-        res.status(500).json({ error: 'Token exchange failed' });
+        console.error('❌ OAuth token exchange error:', err);
+        res.status(500).json({ error: 'Token exchange failed', message: err.message });
       }
     } else if (error) {
       res.redirect(`/strava-stellar-rewards.html?auth=error&error=${error}`);
